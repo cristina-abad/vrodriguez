@@ -34,4 +34,5 @@ There are some additional considerations that should be added to the final scrip
 	- Objects with a single access should be included in a separate file, with columns: "object-id, delay". These objects have SPAN = 0, and accessCount = 1
 	- Objects with a single interarrival time (2 accesses), and those with "NaN"s values in Summary Statistics should be put together in a separate file, with columns: "object-id, delay, SPAN, AccessCount"
 - The fortmat of output files should be as standard as possible.
+- Interarrivals should be in miliseconds, instead of seconds.
 
