@@ -1,4 +1,4 @@
-package benchmarks.issues;
+package benchmarks.tests;
 
 
 import java.io.*;

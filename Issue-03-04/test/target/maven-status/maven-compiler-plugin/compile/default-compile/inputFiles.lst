@@ -1,3 +1,9 @@
-/home/cris/workspace/test/src/main/java/benchmarks/issues/Issue4.java
-/home/cris/workspace/test/src/main/java/benchmarks/issues/Issue3.java
-/home/cris/workspace/test/src/main/java/benchmarks/issues/readEmpiricalDistributionFromSerializedFile.java
+/home/victor/Desktop/test/src/main/java/benchmarks/tests/testExponentialDistribution.java
+/home/victor/Desktop/test/src/main/java/benchmarks/tests/TestMain.java
+/home/victor/Desktop/test/src/main/java/benchmarks/tests/testJDKRandomGenerator.java
+/home/victor/Desktop/test/src/main/java/benchmarks/tests/Params.java
+/home/victor/Desktop/test/src/main/java/benchmarks/tests/testStatistics.java
+/home/victor/Desktop/test/src/main/java/benchmarks/tests/testEmpiricalDistributionFB.java
+/home/victor/Desktop/test/src/main/java/benchmarks/tests/readEmpiricalDistributionFromSerializedFile.java
+/home/victor/Desktop/test/src/main/java/benchmarks/tests/testNormalDistribution.java
+/home/victor/Desktop/test/src/main/java/benchmarks/tests/testEmpiricalDistributionLB.java
