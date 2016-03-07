@@ -3,7 +3,7 @@ import os
 
 if __name__ == '__main__':
     args = sys.argv
-    if len(args) > 3:
+    if len(args) not in [2,3]:
         print 'amount of parameters: 2'
         print 'usage: generate_sdf.py <inputfile> <delimiter>'
         exit(0)
