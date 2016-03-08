@@ -18,3 +18,11 @@ or
 ```
 $ python generate_sdf.py <filename> <delimiter>
 ```
+## Run version R
+```
+$ Rscript generate_sdf.R <filename>
+```
+or
+```
+$ Rscript generate_sdf.R <filename> <delimiter>
+```
