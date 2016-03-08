@@ -12,8 +12,8 @@ if __name__ == '__main__':
             args.append(' ')
         FNAME = sys.argv[1]
         delimiter = args[2]
-        f = open(FNAME, 'r')
         if os.path.isfile(FNAME):
+	    f = open(FNAME, 'r')
             s = 0
             for line in f:
                 s += int(line.split(delimiter)[1])
