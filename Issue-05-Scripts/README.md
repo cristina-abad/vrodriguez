@@ -3,7 +3,9 @@ Compile a list of useful scripts to add to our toolbox.
 
 In this issue we will compile a list of programs/scripts to add to our toolbox and discuss them so that we then add them as issues. For example, generate_cdf.sh
 
-#### scriptGetInterarrivalTraces-Animation.py
+#### scriptGetInterarrivalTraces-Animation.py --- DEPRECATED
+
+#### scriptGetInterarrivalsSummaryStatistics.py --- Replace scriptGetInterarrivalTraces-Animation.py
 
 This script takes the tracefile with three columns like these: 
 
