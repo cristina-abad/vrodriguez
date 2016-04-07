@@ -14,20 +14,23 @@ from sklearn.decomposition import PCA
 def main(argv):
     ### Put the arguments in variables.
     datasetFile = ''
+    clusters = 500
     try:
-        opts, args = getopt.getopt(argv,"hf:",["datasetFile="])
+        opts, args = getopt.getopt(argv,"hf:k:",["datasetFile=","clusters="])
     except getopt.GetoptError:
-        print 'scriptKmeans.py -f <datasetFile>'
+        print 'scriptKmeans.py -f <datasetFile> -k <clusters>'
         sys.exit(2)
     for opt, arg in opts:
         if opt == '-h':
-            print 'scriptKmeans.py -f <datasetFile>'
+            print 'scriptKmeans.py -f <datasetFile> -k <clusters>'
             sys.exit()
         elif opt in ("-f", "--datasetFile"):
             datasetFile = arg
+        elif opt in ("-k", "--clusters"):
+            clusters = int(arg)
     if datasetFile == '':
         print 'ERROR: Must specify a trace filename.'
-        print 'scriptKmeans.py -f <datasetFile>'
+        print 'scriptKmeans.py -f <datasetFile> -k <clusters>'
         sys.exit(1)
 
     ### Load dataset from file passed as argument. Without the ID column.    
@@ -60,10 +63,11 @@ def main(argv):
     print "Shape after PCA:" + str(X_scaled_PCA.shape) + "\n"
     print "Variance Ratio:" + str(pca.explained_variance_ratio_) + "\n\n"
 
-    ### K-Means with the Scaled Dataset - k=500 per elbow test
+    ### K-Means with the Scaled Dataset - k=<clusters> 500 by default
     print "========================================\n"
     print "K-means only with Scaled Dataset:\n"
-    kmeans_allFeatures = KMeans(init='k-means++', n_clusters=500, n_init=10)
+    ###kmeans_allFeatures = KMeans(init='k-means++', n_clusters=500, n_init=10)
+    kmeans_allFeatures = KMeans(init='k-means++', n_clusters=clusters, n_init=10)
     Z_allFeatures = kmeans_allFeatures.fit_predict(X_scaled)
     numpy.savetxt(datasetFile + "_clustered-Z_allFeatures.csv", Z_allFeatures, delimiter=",", fmt="%d", header="Cluster_id", comments="")
     numpy.savetxt(datasetFile + "_clusters_centers-Z_allFeatures.csv", kmeans_allFeatures.cluster_centers_, delimiter=",")
@@ -74,24 +78,27 @@ def main(argv):
     if X_scaled.shape == X_varianceThreshold.shape:
         print "VarianceThreshold didn't remove any feature."
     else:
-        kmeans_varianceThreshold = KMeans(init='k-means++', n_clusters=500, n_init=10)
+        ###kmeans_varianceThreshold = KMeans(init='k-means++', n_clusters=500, n_init=10)
+        kmeans_varianceThreshold = KMeans(init='k-means++', n_clusters=clusters, n_init=10)
         Z_varianceThreshold = kmeans_varianceThreshold.fit_predict(X_varianceThreshold)
         numpy.savetxt(datasetFile + "_clustered-Z_varianceThreshold.csv", Z_varianceThreshold, delimiter=",", fmt="%d", header="Cluster_id", comments="")
         numpy.savetxt(datasetFile + "_clusters_centers-Z_varianceThreshold.csv", kmeans_varianceThreshold.cluster_centers_, delimiter=",")
 
-    ### K-Means with PCA - k=500 per elbow test
+    ### K-Means with PCA - k=<clusters> 500 by default
     print "========================================\n"
     print "K-means with PCA:\n"
-    kmeans_withPCA = KMeans(init='k-means++', n_clusters=500, n_init=10)
+    ###kmeans_withPCA = KMeans(init='k-means++', n_clusters=500, n_init=10)
+    kmeans_withPCA = KMeans(init='k-means++', n_clusters=clusters, n_init=10)
     Z_withPCA = kmeans_withPCA.fit_predict(X_scaled_PCA)
     numpy.savetxt(datasetFile + "_clustered-Z_withPCA.csv", Z_withPCA, delimiter=",", fmt="%d", header="Cluster_id", comments="")
     numpy.savetxt(datasetFile + "_clusters_centers-Z_withPCA.csv", kmeans_withPCA.cluster_centers_, delimiter=",")
 
-    ### K-Means 2 Features Skewness and AverageInterarrival (mean) - k=500 per elbow test
+    ### K-Means 2 Features Skewness and AverageInterarrival (mean) - k=<clusters> 500 by default
     ### id mean median mid-range gmean std iqr range mad coeficiente_variacion skewness kurtosis
     print "========================================\n"
     print "K-means with 2 Features: Skewness and AverageInterarrival:\n"
-    kmeans_twoFeatures = KMeans(init='k-means++', n_clusters=500, n_init=10)
+    ###kmeans_twoFeatures = KMeans(init='k-means++', n_clusters=500, n_init=10)
+    kmeans_twoFeatures = KMeans(init='k-means++', n_clusters=clusters, n_init=10)
     Z_twoFeatures = kmeans_twoFeatures.fit_predict(X_scaled[:,[0,9]])
     numpy.savetxt(datasetFile + "_clustered-Z_twoFeatures.csv", Z_twoFeatures, delimiter=",", fmt="%d", header="Cluster_id", comments="")
     numpy.savetxt(datasetFile + "_clusters_centers-Z_twoFeatures.csv", kmeans_twoFeatures.cluster_centers_, delimiter=",")
