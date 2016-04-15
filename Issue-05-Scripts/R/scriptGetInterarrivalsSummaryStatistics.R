@@ -20,9 +20,10 @@ traceFilename <- ""
 spec <- t(matrix(c('help', 'h', 0, "logical",
           'file', 'f', 1, "character",
           'tracefile', 't', 2, "character"),nrow=4, ncol=3))
+          
 argv <- commandArgs(trailingOnly = TRUE)
-#args <- c("-f","./test/Animation-lookup-50k.txt")
 opts = getopt(spec, args)
+
 if(!is.null(opts$help)){
   print('scriptGetInterarrivalsSummaryStatistics.R -f <tracefile>')
   quit(save = "no", status = 2)
@@ -45,7 +46,6 @@ interarrival <- hash::hash() # Create a hash empty
 ### Open the file in read mode, and parse each line to obtain the timestamp,
 ### the command, and the id.
 
-# reader <- read.csv(file = traceFilename, sep = " ", header = FALSE)
 reader <- fread(input = traceFilename,  sep = " ", header = FALSE)
 
 mapply(function(id, n){
