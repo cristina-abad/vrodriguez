@@ -20,8 +20,7 @@ traceFilename <- ""
 spec <- t(matrix(c('help', 'h', 0, "logical",
           'file', 'f', 1, "character",
           'tracefile', 't', 2, "character"),nrow=4, ncol=3))
-#argv <- commandArgs(trailingOnly = TRUE)
-args <- c("-f","./test/Animation-lookup-100k.txt")
+args <- commandArgs(trailingOnly = TRUE)
 opts = getopt(spec, args)
 if(!is.null(opts$help)){
   print('scriptGetInterarrivalsSummaryStatistics.R -f <tracefile>')
