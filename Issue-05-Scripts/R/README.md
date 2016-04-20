@@ -5,6 +5,14 @@ It requires packages:
 - [hash](https://cran.r-project.org/web/packages/hash/index.html)
 - [moments](https://cran.r-project.org/web/packages/moments/index.html)
 
+If the packages not found in the CRAN repository, you can read the [steps instructions](https://cran.r-project.org/doc/manuals/r-release/R-admin.html#Installing-packages).
+
+Use the following statement in R once downloaded the package.
+
+```
+install.packages(<path package.tar.gz>, repos = NULL, type = "source")
+```
+
 ## Run
 
 ```
