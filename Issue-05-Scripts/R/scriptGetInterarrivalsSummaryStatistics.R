@@ -15,18 +15,27 @@ ptp <- function(x){
   return(max(x) - min(x))
 }
 
+cv <- function(x){
+  return (pop.sd(x) / abs(mean(x)))
+}
+
+pop.var <- function(x) var(x) * (length(x)-1) / length(x)
+
+pop.sd <- function(x) sqrt(pop.var(x))
+
 ### Main program
 traceFilename <- ""
 spec <- t(matrix(c('help', 'h', 0, "logical",
-          'file', 'f', 1, "character",
-          'tracefile', 't', 2, "character"),nrow=4, ncol=3))
+                   'file', 'f', 1, "character",
+                   'tracefile', 't', 2, "character"),nrow=4, ncol=3))
 args <- commandArgs(trailingOnly = TRUE)
+#args <- c('-f', './Animation-lookup-100k.txt')
 opts = getopt(spec, args)
 if(!is.null(opts$help)){
   print('scriptGetInterarrivalsSummaryStatistics.R -f <tracefile>')
   quit(save = "no", status = 2)
 }else if(!is.null(opts$file) || !is.null(opts$tracefile)){
-    traceFilename <- opts$file
+  traceFilename <- opts$file
 }else{
   print('scriptGetInterarrivalsSummaryStatistics.R -f <tracefile>')
   quit(save = "no", status = 2)
@@ -54,20 +63,21 @@ invisible(mapply(function(id, n){
         append = TRUE) # Add file to log
   id <- as.numeric(id)
   if(!is.null(interarrival[[ n ]])){
-    #dir.create(paste(traceFilename, "-interarrivals", sep = ""))
+    dir.create(paste(traceFilename, "-interarrivals", sep = ""))
     name <- paste(traceFilename, 
                   "-interarrivals/it-", 
                   n, ".txt", sep = "")
     cont <- (id * 1000) - interarrival[[ n ]]
     write(toString(cont), file = name, append = TRUE) # Add file to log
-    }
-    interarrival[[ n ]] <- (id * 1000)
+  }
+  interarrival[[ n ]] <- (id * 1000)
 }, reader$V1, reader$V3))
 
 ### Calculate the summary statistics for each key with more than 2 interarrivals.
 
 cat('id mean median mid-range gmean std iqr range mad coeficiente_variacion skewness kurtosis\n')
 
+# Get population standard desviation
 for(k in ls(interarrival)){
   t <- interarrival[[k]]
   n <- paste(traceFilename,"-interarrivals/it-",k,".txt",sep = "")
@@ -80,17 +90,17 @@ for(k in ls(interarrival)){
         write(k, file = "NaN_interarrivals.txt", append = TRUE)
       }else{
         cat(paste(k,
-                    mean(v),
-                    median(v),
-                    (max(v)-min(v))/2,
-                    gmean(v),
-                    sd(v),
-                    quantile(v, .75) - quantile(v, .25),
-                    ptp(v),
-                    mad(v),
-                    var(v),
-                    sk,
-                    ku, "\n",sep = " "))
+                  mean(v),
+                  median(v),
+                  (max(v)-min(v))/2,
+                  gmean(v),
+                  pop.sd(v),
+                  quantile(v, .75) - quantile(v, .25),
+                  ptp(v),
+                  mad(v, constant = 1),
+                  cv(v),
+                  sk,
+                  ku, "\n",sep = " "))
       }
     }
   }
