@@ -23,6 +23,18 @@ varianceThreshold <- function(dd, variance){
   return (r)
 }
 
+getNComponents <- function(dd, variance){
+  r <-0
+  cnt <- 0
+  for (i in dd) {
+    if(r >= variance)
+      break
+    r <- r + i
+    cnt <- cnt + 1
+  }
+  return(cnt)
+}
+
 pca <- function(data, n_components = NULL){
   i <- 0
   tmp <- 0
@@ -38,6 +50,20 @@ pca <- function(data, n_components = NULL){
   t.transformed <-predict(t.pca, newdata = data)
   t.components <-as.data.frame(t.transformed[,1:i])
   list("pca" = t.pca, "variances" = t.variances)
+}
+
+writeResult <- function(ds, clusters, centers, filename1, filename2){
+  write.table('Cluster-id', 
+              file = paste(ds, filename1, sep = ''),
+              row.names = F, col.names = F)
+  
+  write.table(clusters,
+              file = paste(ds, filename1, sep = ''),
+              append = T, sep = '\n', row.names = F, col.names = F)
+  
+  write.csv(centers,
+            file = paste(ds, filename2, sep = ''),
+            row.names = F)
 }
 
 ### Main program
@@ -74,8 +100,8 @@ x.ds <- fread(input = datasetFile,  sep = " ", header = T, dec = ".")
 x.ds$id <- NULL
 x.scaled <- skscaleR(x.ds)
 
-cat("========================================\n")
-cat('Scaled Dataset Shape: ')
+cat("========================================\n\n")
+cat('Scaled Dataset Shape: \n')
 cat(dim(x.scaled))
 cat("\n")
 
@@ -85,94 +111,71 @@ variance <- 0.9
 
 ### Apply Variance Threshold
 x.varianceThreshold <- varianceThreshold(x.ds, variance)
+x.varianceThreshold_var <- colVar(x.ds)
 cat('========================================\n')
-cat("Variance Threshold: ")
+cat("\nVariance Threshold: \n")
+cat('\nShape after Variance Threshold:\n')
 cat(dim(x.varianceThreshold))
-cat('\nShape after Variance Threshold:')
-cat(x.varianceThreshold)
-cat("\n")
+cat("\n\nVariance of each feature: \n\n")
+cat(x.varianceThreshold_var)
+cat("\n\n")
+
 
 ### Apply PCA
 x_scaled_pca <- pca(data = x.scaled, n_components = variance)
-cat('========================================\n')
+cat('========================================\n\nPCA\n\n')
 cat("Shape after PCA:")
-cat(dim(x_scaled_pca$pca))
-cat('\nVarinate Ratio: \n')
-cat(x_scaled_pca$variances)
-cat("\n")
+d<- getNComponents(x_scaled_pca$variances, variance)
+cmps <- x_scaled_pca$pca$scores[, c(1:d)]
+cat(dim(cmps))
+cat('\n\nVarinate Ratio: \n\n')
+cat(x_scaled_pca$variances[c(1:d)])
+cat("\n\n")
 
 ### K-Means with the Scaled Dataset - k=<clusters> 500 by default
-cat('\n========================================\n')
-cat('K-means only with Scaled Dataset:\n')
+cat('========================================\n\n')
+cat('K-means only with Scaled Dataset:\n\n')
 # In R, doesn't exist 'kmeans++'
 kmeans.allFeatures = kmeans(x = x.scaled, centers = clusters, nstart = 10)
 
-write.table('Cluster-id', 
-          file = paste(datasetFile, "_clustered-Z_allFeatures.csv", sep = ''),
-          row.names = F, col.names = F)
-
-write.table(kmeans.allFeatures$cluster, 
-          file = paste(datasetFile, "_clustered-Z_allFeatures.csv", sep = ''),
-          append = T, sep = '\n', row.names = F, col.names = F)
-
-write.csv(kmeans.allFeatures$centers,
-          file = paste(datasetFile, "_clusters_centers-Z_allFeatures.csv", sep = ''),
-          row.names = F)
+writeResult(ds = datasetFile, clusters = kmeans.allFeatures$cluster-1,
+            centers = kmeans.allFeatures$centers,
+            filename1 = "_clustered-Z_allFeatures.csv",
+            filename2 = "_clusters_centers-Z_allFeatures.csv")
 
 ### K-Means with VarianceThreshold - k=500 per elbow test
-cat('========================================\n')
-cat('K-means with VarianceThreshold:\n')
+cat('========================================\n\n')
+cat('K-means with VarianceThreshold:\n\n')
 if (all(dim(x.scaled) == dim(x.varianceThreshold))){
   cat('VarianceThreshold didn\'t remove any feature.')
 }else{
   kmeans.varianceThreshold <- kmeans(x = x.varianceThreshold, centers = clusters, nstart = 10)
-  
-  write.table('Cluster-id', 
-              file = paste(datasetFile, "_clustered-Z_varianceThreshold.csv", sep = ''),
-              row.names = F, col.names = F)
-  
-  write.table(kmeans.allFeatures$cluster, 
-            file = paste(datasetFile, "_clustered-Z_varianceThreshold.csv", sep = ''),
-            append = T, sep = '\n', row.names = F, col.names = F)
-  
-  write.csv(kmeans.allFeatures$centers,
-            file = paste(datasetFile, "_clusters_centers-Z_varianceThreshold.csv", sep = ''),
-            row.names = F)
+
+  writeResult(ds = datasetFile, clusters = kmeans.allFeatures$cluster-1,
+              centers = kmeans.allFeatures$centers,
+              filename1 = "_clustered-Z_varianceThreshold.csv",
+              filename2 = "_clustered-Z_varianceThreshold.csv")
 }
 
 ### K-Means with PCA - k=<clusters> 500 by default
-cat('========================================\n')
-cat('K-means with PCA:\n')
+cat('========================================\n\n')
+cat('K-means with PCA:\n\n')
 ###kmeans_withPCA = KMeans(init='k-means++', n_clusters=500, n_init=10)
 kmeans.withPCA = kmeans(x = x_scaled_pca$pca$scores, centers = clusters, nstart = 10)
 
-write.table('Cluster-id', 
-            file = paste(datasetFile, "_clustered-Z_withPCA.csv", sep = ''),
-            row.names = F, col.names = F)
-
-write.table(kmeans.withPCA$cluster, 
-          file = paste(datasetFile, "_clustered-Z_withPCA.csv", sep = ''),
-          append = T, sep = '\n', row.names = F, col.names = F)
-
-write.csv(kmeans.withPCA$centers,
-          file = paste(datasetFile, "_clusters_centers-Z_withPCA.csv", sep = ''),
-          row.names = F)
+writeResult(ds = datasetFile, clusters = kmeans.withPCA$cluster-1,
+            centers = kmeans.withPCA$centers,
+            filename1 = "_clustered-Z_withPCA.csv",
+            filename2 = "_clusters_centers-Z_withPCA.csv")
 
 ### K-Means 2 Features Skewness and AverageInterarrival (mean) - k=<clusters> 500 by default
 ### id mean median mid-range gmean std iqr range mad coeficiente_variacion skewness kurtosis
 
-cat('========================================\n')
-cat('K-means with 2 Features: Skewness and AverageInterarrival:\n')
+cat('========================================\n\n')
+cat('K-means with 2 Features: Skewness and AverageInterarrival:\n\n')
 kmeans.twoFeatures <- kmeans(x = x.scaled[, c(1,10)], centers = clusters, nstart = 10)
 
-write.table('Cluster-id', 
-            file = paste(datasetFile, "_clustered-Z_twoFeatures.csv", sep = ''),
-            row.names = F, col.names = F)
-
-write.table(kmeans.twoFeatures$cluster,
-          file = paste(datasetFile, "_clustered-Z_twoFeatures.csv", sep = ''),
-          append = T, sep = '\n', row.names = F, col.names = F)
-
-write.csv(kmeans.twoFeatures$centers,
-          file = paste(datasetFile, "_clusters_centers-Z_twoFeatures.csv", sep = ''),
-          row.names = F)
+writeResult(ds = datasetFile, clusters = kmeans.twoFeatures$cluster-1,
+            centers = kmeans.twoFeatures$centers,
+            filename1 = "_clustered-Z_twoFeatures.csv",
+            filename2 = "_clusters_centers-Z_twoFeatures.csv")
