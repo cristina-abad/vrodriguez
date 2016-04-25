@@ -154,7 +154,7 @@ if (all(dim(x.scaled) == dim(x.varianceThreshold))){
   writeResult(ds = datasetFile, clusters = kmeans.allFeatures$cluster-1,
               centers = kmeans.allFeatures$centers,
               filename1 = "_clustered-Z_varianceThreshold.csv",
-              filename2 = "_clustered-Z_varianceThreshold.csv")
+              filename2 = "_clustered-centers-Z_varianceThreshold.csv")
 }
 
 ### K-Means with PCA - k=<clusters> 500 by default
