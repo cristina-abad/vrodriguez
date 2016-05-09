@@ -63,7 +63,7 @@ invisible(mapply(function(id, n){
         append = TRUE) # Add file to log
   id <- as.numeric(id)
   if(!is.null(interarrival[[ n ]])){
-    dir.create(paste(traceFilename, "-interarrivals", sep = ""))
+    # dir.create(paste(traceFilename, "-interarrivals", sep = ""))
     name <- paste(traceFilename, 
                   "-interarrivals/it-", 
                   n, ".txt", sep = "")
