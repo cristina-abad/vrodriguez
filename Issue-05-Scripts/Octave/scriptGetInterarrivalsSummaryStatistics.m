@@ -49,7 +49,6 @@ while(!feof(reader))
 endwhile
 fclose(reader);
 fclose(file);
-printf("Finished\n");
 
 % Calculate the summary statistics for each key with more than 2 interarrivals.
 
