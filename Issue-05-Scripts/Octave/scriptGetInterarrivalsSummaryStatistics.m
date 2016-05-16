@@ -3,7 +3,7 @@ warning("off");
 source("./functions.m");
 
 % Add packages
-pkg load general;
+%pkg load java;
 pkg load statistics;
 format long;
 
@@ -31,7 +31,7 @@ endif
 
 % Create the interarrival dictionary
 
-interarrival = struct();
+interarrival = javaObject("java.util.Hashtable");
 
 % Open the file in read mode, and parse each line to obtain the timestamp,
 % the command, and the id.
@@ -40,12 +40,12 @@ reader = fopen(traceFilename, "r");
 while(!feof(reader))
 	[line1, line2, line3] = fscanf(reader,"%f %s %[^\n]","C");
 	fprintf(file,"%.15f\n", line1);
-	if(isfield(interarrival, line3))
+	if(interarrival.containsKey(line3))
 		myfile = fopen(strcat(traceFilename, "-interarrivals\/it-", line3,".txt"), "a");
-		fprintf(myfile, "%.15f\n", line1*1000 - interarrival.(line3));
+		fprintf(myfile, "%.15f\n", line1*1000 - interarrival.get(line3));
 		fclose(myfile);
 	endif
-	interarrival.(line3) = line1 * 1000;
+	interarrival.put(line3, line1 * 1000);
 endwhile
 fclose(reader);
 fclose(file);
@@ -53,10 +53,13 @@ fclose(file);
 % Calculate the summary statistics for each key with more than 2 interarrivals.
 
 printf("id mean median mid-range gmean std iqr range mad coeficiente_variacion skewness kurtosis\n");
-for [v, k] = interarrival
+keys = interarrival.keys;
+while(keys.hasMoreElements())
+	k = keys.nextElement();
+	v = interarrival.get(k);
 	f = fopen(strcat(traceFilename,"-interarrivals\/it-",k,".txt"), "r");
 	if (f != -1)	
-		v = dlmread(strcat(traceFilename,"-interarrivals/it-",k,".txt"));
+		v = fscanf(f, "%f\n");
 		if(length(v) > 1)
 			printf("%f %f %f %f %f %f %f %f %f %f %f\n",
 				mean(v),
@@ -71,5 +74,6 @@ for [v, k] = interarrival
 				skewness(v),
 				kurtosis(v));
 		endif
+		fclose(f);
 	endif
-endfor
+endwhile
