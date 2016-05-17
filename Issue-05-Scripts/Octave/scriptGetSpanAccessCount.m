@@ -11,10 +11,10 @@ if (length(args) == 1)
 		[filename_id, tmp] = fscanf(filename_tmp,"%[^ ] %[^\n]\n","C");
 		while(!feof(filename_tmp))
 			[filename_id, tmp] = fscanf(filename_tmp,"%[^ ] %[^\n]\n","C");
-			filename_id = strcat(filename,"-interarrivals\/it-", filename_id, ".txt");
+			filename_id2 = strcat(filename,"-interarrivals\/it-", filename_id, ".txt");
 			interarrivals = 0;
 			span = 0;
-			f_id = fopen(filename_id, "r");
+			f_id = fopen(filename_id2, "r");
 			while(!feof(f_id))
 				[s, tmp] = fscanf(f_id,"%f %[^\n]\n","C");
 				interarrivals = interarrivals + 1;

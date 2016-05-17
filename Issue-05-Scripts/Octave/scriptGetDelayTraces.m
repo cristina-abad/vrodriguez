@@ -4,7 +4,6 @@ source("./myFunctions.m");
 
 % Add packages
 pkg load statistics;
-format long;
 
 % Main program
 
@@ -30,7 +29,7 @@ if isempty(traceFilename)
 endif
 
 traceFile = fopen(traceFilename, "r");
-[zero, tmp] = fscanf(traceFile, "%f %[^\n]", "C");
+[zero, tmp] = fscanf(traceFile, "%f %[^\n]\n", "C");
 fclose(traceFile);
 
 % Create the interarrival dictionary
@@ -41,15 +40,15 @@ file = fopen(strcat(traceFilename, "-delays-IndiceLeido"), "a");
 % the command, and the id.
 
 traceFile = fopen(traceFilename, "r");
+traceFileDelays = strcat(traceFilename, "-delays");
 while(!feof(traceFile))
 	[line1, line2, line3] = fscanf(traceFile,"%f %s %[^\n]","C");
 	fprintf(file, "%s\n", line3);
 	if(!interarrival.containsKey(line3))
 		interarrival.put(line3, line1);
-		myFile = fopen(strcat(traceFilename, "-delays"), "a");
-		fprintf(myFile, "%s %f\n",line3, (line1-zero)*1000);
+		myFile = fopen(traceFileDelays, "a");
+		fprintf(myFile, "%s %.15f\n",line3, (line1-zero)*1000);
 		fclose(myFile);
 	endif
 endwhile
-
 fclose(traceFile);

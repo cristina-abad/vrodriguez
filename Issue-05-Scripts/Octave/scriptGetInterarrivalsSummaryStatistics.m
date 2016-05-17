@@ -1,9 +1,8 @@
 #! /bin/octave -qf
 warning("off");
-source("./functions.m");
+source("./myFunctions.m");
 
 % Add packages
-%pkg load java;
 pkg load statistics;
 format long;
 
@@ -25,7 +24,8 @@ if paramIn('-f', args)
 endif
 
 if isempty(traceFilename)
-	printf("No such filename\n");
+	printf("ERROR: Must specify a trace filename.\n");
+	printf("scriptGetDelayTraces.m -f <tracefile>")
 	exit(0);
 endif
 
@@ -54,6 +54,7 @@ fclose(file);
 
 printf("id mean median mid-range gmean std iqr range mad coeficiente_variacion skewness kurtosis\n");
 keys = interarrival.keys;
+
 while(keys.hasMoreElements())
 	k = keys.nextElement();
 	v = interarrival.get(k);
@@ -61,7 +62,8 @@ while(keys.hasMoreElements())
 	if (f != -1)	
 		v = fscanf(f, "%f\n");
 		if(length(v) > 1)
-			printf("%f %f %f %f %f %f %f %f %f %f %f\n",
+			printf("%s %f %f %f %f %f %f %f %f %f %f %f\n",
+				k,
 				mean(v),
 				median(v),
 				range(v)/2,
